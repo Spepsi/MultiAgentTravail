@@ -32,11 +32,16 @@ public class Main {
 		
 		
 		// Lancement d'un agent
-		AgentController test = mc.createNewAgent("acheteur", Individu.class.getName(), new String[]{"Oui oui marche sur la lune"});
-		AgentController test2 = mc.createNewAgent("vendeur", Etat.class.getName(), new String[]{"Oui oui marche sur la lune"});
 		
+		AgentController test2 = mc.createNewAgent("etat", Etat.class.getName(), new String[]{});
+		AgentController poleEmploi = mc.createNewAgent("pole-emploi", PoleEmploi.class.getName(), new String[]{});
+		
+		AgentController test = mc.createNewAgent("travailleur", Individu.class.getName(), new Integer[]{0,20});
+		
+		poleEmploi.start();
 		test.start();
 		test2.start();
+		
 		
 	}
 	
