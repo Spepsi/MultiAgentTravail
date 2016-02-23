@@ -51,6 +51,15 @@ public class Etat extends Agent {
 		}
 	}
 	
+	public void demission(int qualif){
+		if(qualif>2 ||qualif<0){
+			return;
+		}
+		if(offresPourvues[qualif]>0){
+			offresAPourvoir[qualif]++;
+			offresPourvues[qualif]--;
+		}
+	}
 	// Put agent initializations here
 	protected void setup() {
 		// Create the catalogue
@@ -101,6 +110,19 @@ public class Etat extends Agent {
 			
 		});
 		
+		this.addBehaviour(new CyclicBehaviour(this){
+			@Override
+			public void action() {
+				MessageTemplate mt = MessageTemplate.MatchConversationId("confirmation emploi");
+				ACLMessage message = this.myAgent.receive(mt);
+				if(message!=null){
+					((Etat)this.myAgent).pourvoir(new Emploi(message.getContent()).getQualification());
+				}else{
+					block();
+				}
+				
+			}
+		});
 
 	}
 

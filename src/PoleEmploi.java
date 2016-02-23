@@ -139,7 +139,7 @@ public class PoleEmploi  extends Agent{
 				// Attendre réponse
 				MessageTemplate mt = MessageTemplate.MatchConversationId("reponse emploi");
 				ACLMessage message = this.myAgent.receive(mt);
-				if(message!=null && this.receveur.getName().equals(message.getSender().getName()) ){
+				if(message!=null && this.receveur.getName().equals(message.getSender().getName())){
 					String msg = message.getContent();
 					AID aid = message.getSender();
 					if(msg.charAt(0)=='1'){
