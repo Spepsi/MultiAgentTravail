@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 import jade.core.AID;
@@ -16,7 +17,7 @@ import jade.lang.acl.MessageTemplate;
 public class PoleEmploi  extends Agent{
 
 
-	//L'état lui envoie ses offres d'emplois lorsqu'il y en a
+	//L'ï¿½tat lui envoie ses offres d'emplois lorsqu'il y en a
 
 	public Vector<Emploi> listeEmplois = new Vector<Emploi>();
 
@@ -56,21 +57,29 @@ public class PoleEmploi  extends Agent{
 					//TODO : completer les hashmap
 					((PoleEmploi)this.myAgent).qualificationParAID.put(message.getSender(), Individu.qualifFromString(message.getContent()));
 					((PoleEmploi)this.myAgent).situation.put(message.getSender(), true);
+                    int chomeurs = 0;
+                    for(Map.Entry<AID, Boolean> entry : ((PoleEmploi)this.myAgent).situation.entrySet()) {
+                        if(entry.getValue()) {
+                            chomeurs++;
+                        }
+                    }
+					System.out.println("Nombre de chÃ´meurs : "+chomeurs);
 				}else{
 					block();
 				}
 			}
 		});
-		// Réception d'un nouvel emploi
+		// Rï¿½ception d'un nouvel emploi
 		this.addBehaviour(new CyclicBehaviour(this){
 			@Override
 			public void action() {
-				//Reception de la part de l'état d'une nouvelle offre
+				//Reception de la part de l'ï¿½tat d'une nouvelle offre
 				MessageTemplate mt = MessageTemplate.MatchConversationId("nouvelle offre");
 				ACLMessage message = this.myAgent.receive(mt);
 				if(message!=null){
 					Emploi e= new Emploi(message.getContent());
 					((PoleEmploi)this.myAgent).listeEmplois.add(e);
+                    System.out.println("Nombre d'emplois non pourvus : "+((PoleEmploi)this.myAgent).listeEmplois.size());
 					this.myAgent.addBehaviour(new BehaviourPropositionEmploi(this.myAgent,e));	
 				}else{
 					block();
@@ -89,13 +98,13 @@ public class PoleEmploi  extends Agent{
 				toSend.add(i);
 			}
 		}
-		// On récupère ceux qui sont au chomage
+		// On rï¿½cupï¿½re ceux qui sont au chomage
 		for(AID i : toSend){
 			if(situation.get(i)){
 				finalToSend.addElement(i);
 			}
 		}
-		//On trie le vecteur aléatoirement 
+		//On trie le vecteur alï¿½atoirement 
 		int taille = finalToSend.size();
 		int selection = 0;
 		if(taille==0){
@@ -103,7 +112,7 @@ public class PoleEmploi  extends Agent{
 		}else{
 			selection = (int)(Math.random()*taille);
 		}
-		// Envoyer message seulement aux personnes étant au chomage
+		// Envoyer message seulement aux personnes ï¿½tant au chomage
 		//			DFAgentDescription template = new DFAgentDescription();
 		//			ServiceDescription sd = new ServiceDescription();
 		//			sd.setType("individu");
@@ -131,14 +140,14 @@ public class PoleEmploi  extends Agent{
 		public void action() {
 			switch(step){
 			case 0:
-				// Etape 1 proposer emploi à une personne
+				// Etape 1 proposer emploi ï¿½ une personne
 				this.receveur = ((PoleEmploi)this.myAgent).proposerEmploi(e);
 				if(this.receveur!=null){
 					step++;
 				}
 				break;
 			case 1:
-				// Attendre réponse
+				// Attendre rï¿½ponse
 				MessageTemplate mt = MessageTemplate.MatchConversationId("reponse emploi");
 				ACLMessage message = this.myAgent.receive(mt);
 				if(message!=null && this.receveur.getName().equals(message.getSender().getName())){
@@ -148,10 +157,18 @@ public class PoleEmploi  extends Agent{
 						//Emploi pris
 						((PoleEmploi)this.myAgent).listeEmplois.remove(e);
 						((PoleEmploi)this.myAgent).situation.put(aid, false);
-						//Dire à l'état que l'emploi est pourvu
+						//Dire ï¿½ l'ï¿½tat que l'emploi est pourvu
 						ACLMessage aclMessage = new ACLMessage(ACLMessage.CFP);
 
-						//Chercher l'état
+                        int chomeurs = 0;
+                        for(Map.Entry<AID, Boolean> entry : ((PoleEmploi)this.myAgent).situation.entrySet()) {
+                            if(entry.getValue()) {
+                                chomeurs++;
+                            }
+                        }
+                        System.out.println("Nombre de chÃ´meurs : "+chomeurs);
+
+						//Chercher l'ï¿½tat
 						DFAgentDescription template = new DFAgentDescription();
 						ServiceDescription sd = new ServiceDescription();
 						sd.setType("etat");

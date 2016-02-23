@@ -48,7 +48,7 @@ public class Individu extends Agent {
 	private int besoinRevenu;
 	private int besoinTempsLibre;
 	private int age;
-	//Nombre de mois consécutifs en travaillant trop
+	//Nombre de mois consï¿½cutifs en travaillant trop
 	private int burnoutRate;
 	//Estime de soi : baisse son salaire au bout de n_mois
 	private int estimeDeSoi;
@@ -71,7 +71,7 @@ public class Individu extends Agent {
 		catch (FIPAException fe) {
 			fe.printStackTrace();
 		}
-		//TODO : Dire à pole emploi que j'existe
+		//TODO : Dire ï¿½ pole emploi que j'existe
 		DFAgentDescription template = new DFAgentDescription();
 		ServiceDescription sd = new ServiceDescription();
 		sd.setType("pole-emploi");
@@ -165,7 +165,7 @@ public class Individu extends Agent {
 		// Printout a dismissal message
 		System.out.println("Buyer-agent "+getAID().getName()+" terminating.");
 
-		//TODO : quand un individu meurt il le signifie à pole emploi et à l'état
+		//TODO : quand un individu meurt il le signifie ï¿½ pole emploi et ï¿½ l'ï¿½tat
 	}
 	/**
 	   Inner class RequestPerformer.
