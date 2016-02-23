@@ -175,11 +175,12 @@ public class Individu extends Agent {
 
 	public String toString(){
 		String result = "";
-		result+=getAID().getName()+":";
-		result+=niveauQualif+":";	
+		result+=getAID().getName()+"okay";
+		result+=niveauQualif+"okay";	
 		return result;
 	}
 	public static int qualifFromString(String s){
-		return Integer.parseInt(s.split(":")[1]);
+		System.out.println("okay: "+ s);
+		return Integer.parseInt(s.split("okay")[1]);
 	}
 }

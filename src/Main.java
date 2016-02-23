@@ -31,10 +31,11 @@ public class Main {
 		// Lancement de la plateforme : 
 		Profile pMain = new ProfileImpl("localhost",8888,null);
 		AgentContainer mc = rt.createMainContainer(pMain);
-
+		
 		AgentController poleEmploi = mc.createNewAgent("pole-emploi", PoleEmploi.class.getName(), new String[]{});
-        poleEmploi.start();
-
+		System.out.println("test");
+		poleEmploi.start();
+        
         final int individuNumber = 10;
         final int ageMax = 60;
         final int ageMin = 20;

@@ -18,7 +18,7 @@ public class PoleEmploi  extends Agent{
 
 	//L'état lui envoie ses offres d'emplois lorsqu'il y en a
 
-	public Vector<Emploi> listeEmplois;
+	public Vector<Emploi> listeEmplois = new Vector<Emploi>();
 
 	public HashMap<AID,Integer> qualificationParAID =  new HashMap<AID,Integer>();
 	//Vrai si au chomage
@@ -26,7 +26,7 @@ public class PoleEmploi  extends Agent{
 
 
 	public void setup(){
-
+		
 		// Create the catalogue
 		// Register the book-selling service in the yellow pages
 		DFAgentDescription dfd = new DFAgentDescription();
@@ -41,7 +41,7 @@ public class PoleEmploi  extends Agent{
 		catch (FIPAException fe) {
 			fe.printStackTrace();
 		}
-
+		
 
 		// Regarder ses messages tous les 1000
 		//Reception d'un nouvel utilisateur
@@ -133,7 +133,9 @@ public class PoleEmploi  extends Agent{
 			case 0:
 				// Etape 1 proposer emploi à une personne
 				this.receveur = ((PoleEmploi)this.myAgent).proposerEmploi(e);
-				step++;
+				if(this.receveur!=null){
+					step++;
+				}
 				break;
 			case 1:
 				// Attendre réponse
@@ -174,12 +176,6 @@ public class PoleEmploi  extends Agent{
 					}
 				}
 				break;
-			case 2:
-				// Assignait l'emploi
-				step++;
-				break;
-			default:
-				break;
 			}
 
 		}
@@ -187,7 +183,7 @@ public class PoleEmploi  extends Agent{
 		@Override
 		public boolean done() {
 
-			return step>=3;
+			return step>=2;
 		}
 	}	
 
