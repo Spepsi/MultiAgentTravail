@@ -24,12 +24,14 @@ Boston, MA  02111-1307, USA.
 
 import jade.core.AID;
 import jade.core.Agent;
+import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
 
 public class Individu extends Agent {
 
@@ -82,13 +84,12 @@ public class Individu extends Agent {
 			aclMessage.setContent(this.toString());
 			aclMessage.setConversationId("coucou");
 			this.send(aclMessage);
-			
+
 		} catch (FIPAException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		
 		chomage = true;
 		// Parametrize agent
 		Object[] args = getArguments();
@@ -100,10 +101,43 @@ public class Individu extends Agent {
 
 
 			// Add a TickerBehaviour that look to job offer and accept or refuse
-			addBehaviour(new TickerBehaviour(this, 1000) {
-				protected void onTick() {
-					//TODO : Get job offers and accept or refuse them
+			addBehaviour(new CyclicBehaviour(this) {
+
+				@Override
+				public void action() {
+					MessageTemplate mt = MessageTemplate.MatchConversationId("proposition emploi");
+					ACLMessage message = this.myAgent.receive(mt);
+					if(message!=null){
+						Emploi e= new Emploi(message.getContent());
+
+						DFAgentDescription template = new DFAgentDescription();
+						ServiceDescription sd = new ServiceDescription();
+						sd.setType("pole-emploi");
+						template.addServices(sd);
+						DFAgentDescription[] ser;
+						try {
+							ser = jade.domain.DFService.search(this.myAgent, template);
+							ACLMessage aclMessage = new ACLMessage(ACLMessage.INFORM);
+							aclMessage.addReceiver(ser[0].getName());
+							if((e.getQualification()+1)*1000>=besoinRevenu){
+							aclMessage.setContent("1");
+							}else{
+								aclMessage.setContent("0");
+							}
+							aclMessage.setConversationId("reponse emploi");
+							this.myAgent.send(aclMessage);
+
+						} catch (FIPAException ex) {
+							// TODO Auto-generated catch block
+							ex.printStackTrace();
+						}
+
+					}else{
+						block();
+					}
+
 				}
+
 			} );
 			// Add a TickerBehaviour that query free time every month
 			addBehaviour(new TickerBehaviour(this, 30000) {
@@ -113,7 +147,7 @@ public class Individu extends Agent {
 						burnoutRate++;
 
 						if(burnoutRate>resistanceBurnout){
-							// TODO : quitter son boulot
+							//TODO : Demissionner
 						}
 					}
 
@@ -130,7 +164,7 @@ public class Individu extends Agent {
 	protected void takeDown() {
 		// Printout a dismissal message
 		System.out.println("Buyer-agent "+getAID().getName()+" terminating.");
-		
+
 		//TODO : quand un individu meurt il le signifie à pole emploi et à l'état
 	}
 	/**
@@ -138,12 +172,14 @@ public class Individu extends Agent {
 	   This is the behaviour used by Book-buyer agents to request seller 
 	   agents the target book.
 	 */
-	
+
 	public String toString(){
 		String result = "";
 		result+=getAID().getName()+":";
 		result+=niveauQualif+":";	
 		return result;
 	}
-
+	public static int qualifFromString(String s){
+		return Integer.parseInt(s.split(":")[1]);
+	}
 }

@@ -68,6 +68,39 @@ public class Etat extends Agent {
 			fe.printStackTrace();
 		}
 		
+		this.addBehaviour(new TickerBehaviour(this,1000){
+
+			@Override
+			protected void onTick() {
+				if(Math.random()>0.5){
+					//CREER UN EMPLOI
+					int qualif = (int)(3*Math.random());
+					((Etat)this.myAgent).offresAPourvoir[qualif]++;
+					// Envoyer l'emploi à pole emploi
+					//TODO : Dire à pole emploi que j'existe
+					DFAgentDescription template = new DFAgentDescription();
+					ServiceDescription sd = new ServiceDescription();
+					sd.setType("pole-emploi");
+					template.addServices(sd);
+					DFAgentDescription[] ser;
+					try {
+						ser = jade.domain.DFService.search(this.myAgent, template);
+						ACLMessage aclMessage = new ACLMessage(ACLMessage.INFORM);
+						aclMessage.addReceiver(ser[0].getName());
+						aclMessage.setContent(new Emploi(qualif,100-(qualif+1)*30).toString());
+						aclMessage.setConversationId("nouvelle offre");
+						this.myAgent.send(aclMessage);
+						
+					} catch (FIPAException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
+			}
+			
+		});
+		
 
 	}
 
@@ -82,7 +115,7 @@ public class Etat extends Agent {
 		}
 
 		// Printout a dismissal message
-		System.out.println("Seller-agent "+getAID().getName()+" terminating.");
+		System.out.println("Etat"+getAID().getName()+" terminating.");
 	}
 
 
