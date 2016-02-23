@@ -9,14 +9,14 @@ import jade.wrapper.StaleProxyException;
 public class Main {
 
 	public static void main(String[] args){
-		System.out.println("Test JADE");
+		System.out.println("Initialisation");
 		try {
 			methode();
 		} catch (StaleProxyException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		System.out.println("En cours d'execution");
 	}
 	
 	static void methode() throws StaleProxyException{
