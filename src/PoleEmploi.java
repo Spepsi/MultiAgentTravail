@@ -174,7 +174,7 @@ public class PoleEmploi  extends Agent{
 						}
 						step++;
 					}else{
-                        printState("Offre refusÃ©e");
+                        printState("Offre refusée");
 						block();
 					}
 				}

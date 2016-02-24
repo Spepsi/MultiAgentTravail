@@ -5,6 +5,7 @@ public class Emploi {
 	public static int incrementEmploi  = 0;
 	public int id;
 	private int qualification;
+	public int salaire;
 	private int tempsLibre;
 	
 	
@@ -20,7 +21,14 @@ public class Emploi {
 		incrementEmploi++;
 		
 	}
-	
+	public Emploi(int qualification,int tempsLibre,int salaire){
+		this.qualification = qualification;
+		this.tempsLibre = tempsLibre;
+		this.salaire = salaire;
+		this.id = incrementEmploi;
+		incrementEmploi++;
+		
+	}
 	public String toString(){
 		String result = "";
 		result+=qualification+":";
