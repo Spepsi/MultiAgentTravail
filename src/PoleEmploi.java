@@ -150,7 +150,6 @@ public class PoleEmploi  extends Agent{
 						((PoleEmploi)this.myAgent).situation.put(aid, false);
 						//Dire à l'état que l'emploi est pourvu
 						ACLMessage aclMessage = new ACLMessage(ACLMessage.CFP);
-
 						//Chercher l'état
 						DFAgentDescription template = new DFAgentDescription();
 						ServiceDescription sd = new ServiceDescription();
@@ -177,14 +176,50 @@ public class PoleEmploi  extends Agent{
 				}
 				break;
 			}
-
 		}
-
 		@Override
 		public boolean done() {
-
 			return step>=2;
 		}
 	}	
 
+	public void envoyerMessageEtat(String conversationId, String content){
+		DFAgentDescription template = new DFAgentDescription();
+		ServiceDescription sd = new ServiceDescription();
+		sd.setType("etat");
+		template.addServices(sd);
+		DFAgentDescription[] ser;
+		try {
+			ser = jade.domain.DFService.search(this, template);
+			ACLMessage aclMessage = new ACLMessage(ACLMessage.INFORM);
+			aclMessage.addReceiver(ser[0].getName());
+			aclMessage.setContent(content);
+			aclMessage.setConversationId(conversationId);
+			this.send(aclMessage);
+		} catch (FIPAException ex) {
+			// TODO Auto-generated catch block
+			ex.printStackTrace();
+		}
+	}
+	
+	public void envoyerMessageIndividu(String conversationId, String content){
+		DFAgentDescription template = new DFAgentDescription();
+		ServiceDescription sd = new ServiceDescription();
+		sd.setType("individu");
+		template.addServices(sd);
+		DFAgentDescription[] ser;
+		try {
+			ser = jade.domain.DFService.search(this, template);
+			ACLMessage aclMessage = new ACLMessage(ACLMessage.INFORM);
+			aclMessage.addReceiver(ser[0].getName());
+			aclMessage.setContent(content);
+			aclMessage.setConversationId(conversationId);
+			this.send(aclMessage);
+
+		} catch (FIPAException ex) {
+			// TODO Auto-generated catch block
+			ex.printStackTrace();
+		}
+		
+	}
 }

@@ -98,8 +98,7 @@ public class Individu extends Agent {
 			besoinRevenu = (int) ((niveauQualif+1)*(multiplicateurSalaire*2*(0.5-Math.random())));
 			besoinTempsLibre = (int) (multiplicateurTempsLibre*2*(0.5-Math.random()));
 			age = (int) args[1]; 
-
-
+			
 			// Add a TickerBehaviour that look to job offer and accept or refuse
 			addBehaviour(new CyclicBehaviour(this) {
 
@@ -109,28 +108,13 @@ public class Individu extends Agent {
 					ACLMessage message = this.myAgent.receive(mt);
 					if(message!=null){
 						Emploi e= new Emploi(message.getContent());
-
-						DFAgentDescription template = new DFAgentDescription();
-						ServiceDescription sd = new ServiceDescription();
-						sd.setType("pole-emploi");
-						template.addServices(sd);
-						DFAgentDescription[] ser;
-						try {
-							ser = jade.domain.DFService.search(this.myAgent, template);
-							ACLMessage aclMessage = new ACLMessage(ACLMessage.INFORM);
-							aclMessage.addReceiver(ser[0].getName());
-							if((e.getQualification()+1)*1000>=besoinRevenu){
-							aclMessage.setContent("1");
+						if((e.getQualification()+1)*1000>=besoinRevenu){
+							envoyerMessagePoleEmploi("reponse emploi", "1");
+							((Individu)this.myAgent).emploi = e;
 							}else{
-								aclMessage.setContent("0");
+								envoyerMessagePoleEmploi("reponse emploi", "0");
 							}
-							aclMessage.setConversationId("reponse emploi");
-							this.myAgent.send(aclMessage);
-
-						} catch (FIPAException ex) {
-							// TODO Auto-generated catch block
-							ex.printStackTrace();
-						}
+						
 
 					}else{
 						block();
@@ -148,9 +132,10 @@ public class Individu extends Agent {
 
 						if(burnoutRate>resistanceBurnout){
 							//TODO : Demissionner
+							envoyerMessagePoleEmploi("demission", emploi.toString());
+							burnoutRate = 0;		
 						}
 					}
-
 				}
 			} );
 		}
@@ -163,7 +148,7 @@ public class Individu extends Agent {
 	// Put agent clean-up operations here
 	protected void takeDown() {
 		// Printout a dismissal message
-		System.out.println("Buyer-agent "+getAID().getName()+" terminating.");
+		System.out.println("Individu "+getAID().getName()+" terminating.");
 
 		//TODO : quand un individu meurt il le signifie à pole emploi et à l'état
 	}
@@ -172,7 +157,27 @@ public class Individu extends Agent {
 	   This is the behaviour used by Book-buyer agents to request seller 
 	   agents the target book.
 	 */
+	public void envoyerMessagePoleEmploi(String conversationId, String content){
 
+		DFAgentDescription template = new DFAgentDescription();
+		ServiceDescription sd = new ServiceDescription();
+		sd.setType("pole-emploi");
+		template.addServices(sd);
+		DFAgentDescription[] ser;
+		try {
+			ser = jade.domain.DFService.search(this, template);
+			ACLMessage aclMessage = new ACLMessage(ACLMessage.INFORM);
+			aclMessage.addReceiver(ser[0].getName());
+			aclMessage.setContent(content);
+			aclMessage.setConversationId(conversationId);
+			this.send(aclMessage);
+
+		} catch (FIPAException ex) {
+			// TODO Auto-generated catch block
+			ex.printStackTrace();
+		}
+		
+	}
 	public String toString(){
 		String result = "";
 		result+=getAID().getName()+"okay";
