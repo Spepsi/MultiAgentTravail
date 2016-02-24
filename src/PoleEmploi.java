@@ -57,7 +57,7 @@ public class PoleEmploi  extends Agent{
 					//TODO : completer les hashmap
 					((PoleEmploi)this.myAgent).qualificationParAID.put(message.getSender(), Individu.qualifFromString(message.getContent()));
 					((PoleEmploi)this.myAgent).situation.put(message.getSender(), true);
-                    printState();
+                    printState("Nouvel arrivant");
 				} else {
 					block();
 				}
@@ -73,7 +73,7 @@ public class PoleEmploi  extends Agent{
 				if(message!=null){
 					Emploi e= new Emploi(message.getContent());
 					((PoleEmploi)this.myAgent).listeEmplois.add(e);
-                    printState();
+                    printState("Nouvelle offre");
 					this.myAgent.addBehaviour(new BehaviourPropositionEmploi(this.myAgent,e));	
 				}else{
 					block();
@@ -154,7 +154,7 @@ public class PoleEmploi  extends Agent{
 						//Dire � l'�tat que l'emploi est pourvu
 						ACLMessage aclMessage = new ACLMessage(ACLMessage.CFP);
 
-                        printState();
+                        printState("Offre acceptée");
 
 						//Chercher l'�tat
 						DFAgentDescription template = new DFAgentDescription();
@@ -177,6 +177,7 @@ public class PoleEmploi  extends Agent{
 						}
 						step++;
 					}else{
+                        printState("Offre refusée");
 						block();
 					}
 				}
@@ -192,7 +193,11 @@ public class PoleEmploi  extends Agent{
 		}
 	}
 
-	public void printState() {
+    public void printState() {
+        printState("");
+    }
+
+	public void printState(String message) {
 
         int chomeurs = 0;
         for(Map.Entry<AID, Boolean> entry : situation.entrySet()) {
@@ -200,7 +205,7 @@ public class PoleEmploi  extends Agent{
                 chomeurs++;
             }
         }
-        System.out.println("Chômeurs : " + chomeurs + " - Emploies non pourvus : " + listeEmplois.size());
+        System.out.println("Chômeurs : " + chomeurs + " - Emploies non pourvus : " + listeEmplois.size() + " - " + message);
     }
 
 }
