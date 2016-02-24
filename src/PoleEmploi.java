@@ -53,18 +53,12 @@ public class PoleEmploi  extends Agent{
 				//Recevoir tous les nouveaux arrivants
 				MessageTemplate mt = MessageTemplate.MatchConversationId("coucou");
 				ACLMessage message = this.myAgent.receive(mt);
-				if(message!=null){
+				if(message!=null) {
 					//TODO : completer les hashmap
 					((PoleEmploi)this.myAgent).qualificationParAID.put(message.getSender(), Individu.qualifFromString(message.getContent()));
 					((PoleEmploi)this.myAgent).situation.put(message.getSender(), true);
-                    int chomeurs = 0;
-                    for(Map.Entry<AID, Boolean> entry : ((PoleEmploi)this.myAgent).situation.entrySet()) {
-                        if(entry.getValue()) {
-                            chomeurs++;
-                        }
-                    }
-					System.out.println("Nombre de chômeurs : "+chomeurs);
-				}else{
+                    printState();
+				} else {
 					block();
 				}
 			}
@@ -79,7 +73,7 @@ public class PoleEmploi  extends Agent{
 				if(message!=null){
 					Emploi e= new Emploi(message.getContent());
 					((PoleEmploi)this.myAgent).listeEmplois.add(e);
-                    System.out.println("Nombre d'emplois non pourvus : "+((PoleEmploi)this.myAgent).listeEmplois.size());
+                    printState();
 					this.myAgent.addBehaviour(new BehaviourPropositionEmploi(this.myAgent,e));	
 				}else{
 					block();
@@ -160,13 +154,7 @@ public class PoleEmploi  extends Agent{
 						//Dire � l'�tat que l'emploi est pourvu
 						ACLMessage aclMessage = new ACLMessage(ACLMessage.CFP);
 
-                        int chomeurs = 0;
-                        for(Map.Entry<AID, Boolean> entry : ((PoleEmploi)this.myAgent).situation.entrySet()) {
-                            if(entry.getValue()) {
-                                chomeurs++;
-                            }
-                        }
-                        System.out.println("Nombre de chômeurs : "+chomeurs);
+                        printState();
 
 						//Chercher l'�tat
 						DFAgentDescription template = new DFAgentDescription();
@@ -202,6 +190,17 @@ public class PoleEmploi  extends Agent{
 
 			return step>=2;
 		}
-	}	
+	}
+
+	public void printState() {
+
+        int chomeurs = 0;
+        for(Map.Entry<AID, Boolean> entry : situation.entrySet()) {
+            if(entry.getValue()) {
+                chomeurs++;
+            }
+        }
+        System.out.println("Chômeurs : " + chomeurs + " - Emploies non pourvus : " + listeEmplois.size());
+    }
 
 }
